@@ -1,23 +1,33 @@
-# 全栈项目-傅里叶变换绘图
+# 傅里叶变换绘图-网页版-v3
+--------------------------------------
+- 版本: 2022年4月第三版
+- 在线网页: <https://www.xcreate.cool/test/imgtest/imgDraw.html>
+- 演示视频: [BV1cY411u7jU](https://www.bilibili.com/video/BV1cY411u7jU?spm_id_from=333.999.0.0&vd_source=09a1b1eba90b464c2c46c4c894480343)
 
-#### 介绍
-傅里叶变换绘图-网页版
+<img src="./img/example.png" width="60%">
 
-#### 软件架构
-软件架构说明
+### 1、文件结构
 
+- `front-end` 前端代码
+- `py-back-end`后端python代码
+- `img` 一些测试过程的图片
 
-#### 安装教程
+### 2、测试方法
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+- 安装好python依赖后，运行`py-back-end`中的`server.py`,之后浏览器打开`imgDraw.html`即可。
+  
+### 3、功能
 
-#### 使用说明
+- 加载图片后经过一系列分析即可绘图
+- 支持降采样重绘
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 4、分析流程
+
+$$
+\begin{CD}
+  原图 @>canny边缘提取>> 边缘二值图 @> 带惯性的深度优先搜索 >> 连通路径序列 @> 蚁群优化处理 >> 尽量短的欧拉回路 @> 一维离散傅里叶变换 >> 用于绘图的频谱序列
+\end{CD}
+$$
 
 #### 参与贡献
 
