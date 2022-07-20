@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"-->
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="./css/imgtest.css">
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.css">
+    <script src="./js/axios.min.js"></script>
+    <script src="./js/draw.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row p-2">
+            <div id="input" class="apply col-md-6 m-0 p-0"> 
+                <div id="config">
+                    <form>
+                        <input  id="fileOne" type="file" onchange="imgload();"/>
+                        <p id="pre_offset">偏移：</p>
+                        <input  id="offset" type="range" min="-10" max="10" value="0" onchange="putImg();" />
+                    </form>
+                        
+                    <div class="pdiv1" >
+                        <p id="P">=&emsp;=</p>
+                        <p id="p1">&emsp;^</p>
+                    </div>
+                    <button id="whiteBt" onclick="white()">白底</button>
+                    <button id="drawBt" class="btn-lg" onclick="drawProcess()">画图</button>
+                </div>    
+                    <canvas id="canvasIn" class="mycanvas" width="940" height="940"></canvas>
+            </div>
+            <div id="draw" class="apply col-md-6 m-0 p-0 ">
+                <div class="pdiv2">
+                    <p id="p2">p2</p>
+                    <input type="range" id="samplerate" min="1" max="100" value="100" oninput="resample()"/>
+                    <p id="setSR">采样率:&nbsp;100%</p>
+                    <div id="ifcircle">
+                        <input type="checkbox" id="drawcircle">画圆
+                    </div>
+                </div>
+                <canvas id="canvas" class="mycanvas" width="1200" height="1200"></canvas> 
+            </div>    
+        </div>
+    </div>
+    <ul>
+        <li><a href="https://xcreate.cool/">主页</a></li>
+    </ul>
+ 
+</body>
+</html>
+<script>
+    var fileinput = document.getElementById('fileOne');//读取本地文件
+    var canvas = document.getElementById('canvas');
+    var canvas1= document.getElementById('canvasIn');
+    var ratio=canvas.width/canvas1.width;
+    var trace=new Array();
+    var downrateLine=50;
+
+    //axios.defaults.baseURL='https://xcreate.cool/'; //使用网站api
+    axios.defaults.baseURL='http://127.0.0.1:5000/'; //使用本地后端
+
+    window.onload=function(){
+        let ctx=canvas1.getContext('2d');
+        ctx.font="80px serif";
+        ctx.fillText("傅里叶变换绘图",50,100);
+    }
+//----------------------------------------------------------------------------------------------------------
+    function imgload(){
+        white();
+        putImg();
+    }
+
+    async function drawProcess(){
+        await sendImg();
+        //await delay(500);
+        await searchPath();
+        await computeAM();
+        await OptimizeProcess();
+        await fftResult();
+    }
+//===========================================================================================================
+
+    function delay(ms){
+        return new Promise((resolve)=>{
+            setTimeout(()=>{
+                resolve(ms);
+            },ms);
+        });
+    }
+
+    function white(){
+        let ctx=canvas1.getContext('2d');
+        ctx.fillStyle = "rgb(255,255,255)";
+        ctx.fillRect(0, 0, canvas1.width, canvas1.height);
+    }
+
+    function putImg(){
+        pillar.length=0;
+        dot.length=0;
+        document.getElementById("drawBt").innerHTML="画图";
+        let offset=document.getElementById("offset").value;
+        let fileList = fileinput.files;//1.获取选中的文件列表
+        let file = fileList[0];
+        let reader = new FileReader();//读取文件内容
+        reader.readAsDataURL(file);
+        reader.onload =function(){showCanvas(canvas1,reader.result,offset);}
+        document.getElementById("p1").innerHTML="截取尺寸:&nbsp;"+canvas1.width+"&times;"+canvas1.height;
+    }
+
+    function sendImg(){
+        let piece=0;
+        let url=canvas1.toDataURL("image/jpeg"); 
+        document.getElementById("drawBt").innerHTML="Step1";
+        url=url.replace(/\+/g,"%2B");//important!!! 替换加号为'%2B',防止其被ajax替换为空格
+        return new Promise((resolve,reject)=>{
+            axios.post('getImg',"img="+url)
+            .then( res => {
+                showCanvas(canvas1,res.data.url);
+                setTimeout(()=>{
+                    document.getElementById("P").innerHTML="边缘数量:&nbsp;"+res.data.piece;			
+		        },100);
+                resolve(1);
+            })
+            .catch( error => {
+                console.log(error);
+                reject(error);
+            }); 
+        });
+    }
+
+    function getOnePath(){
+        return new Promise((resolve,reject)=>{
+            axios.get('getPath')
+            .then(res=>{
+                resolve(res.data);
+            })
+            .catch(error=>{reject(error);});
+        });
+    }
+
+    async function searchPath(){
+        let state;
+        let count=1;
+        document.getElementById("drawBt").innerHTML="Step2";
+        while(1){
+            state = await getOnePath();
+            if(state==0) {
+                document.getElementById("P").innerHTML="分析完成..100%";
+                break;
+            }
+            document.getElementById("P").innerHTML="分析中..."+(state.y*100/canvas1.height).toFixed()+"%";
+            document.getElementById("p1").innerHTML="连通域数："+count++;
+            showCanvas(canvas1,state.url);
+        }
+        return new Promise((resolve)=>{resolve(2);});
+    }
+
+
+    function computeAM(){
+        document.getElementById("drawBt").innerHTML="Step3";
+        return new Promise((resolve,reject)=>{
+            axios.get('makeAdjacencyMatrix')
+            .then(res=>{
+                document.getElementById("P").innerHTML="蚁群初始化完成";
+                setDot(res.data.dotlist);
+                resolve(3);
+            })
+            .catch(error=>{reject(error);});
+        });
+    }
+
+    function antseek(){
+        return new Promise((resolve,reject)=>{
+            axios.get('AntOptimize')
+            .then(res=>{
+                resolve(res.data);
+            })
+            .catch(error=>{reject(error);});
+        });
+    }
+
+    async function OptimizeProcess(){
+        let count=0;
+        let wholecount=dot.length/3+1;
+	    trace.length=0;
+        while(count<wholecount){
+            document.getElementById("P").innerHTML="蚁群遍历中..."+ Number(count/wholecount*100).toFixed(0)+"%";
+            data = await antseek();
+            let path=data.path;
+            pillar.length=0;
+            for(let i=0;i<path.length-1;i+=2){
+	            pillar[pillar.length]=new Pillar
+                (canvas,path[i][0]*ratio,path[i][1]*ratio,path[i+1][0]*ratio,path[i+1][1]*ratio,2,"rgba(0,160,90,0.8)");		
+	        }//*/
+	        document.getElementById("p2").innerHTML=
+            "min:"+ Number(data.info).toFixed(0)+"&nbsp;/present:"+ Number(data.pres).toFixed(0);
+            count++;
+        }
+        document.getElementById("p2").innerHTML+="__done!";
+
+        return new Promise((resolve)=>{ resolve(3);});
+    }
+
+    function fftResult(){
+        document.getElementById("drawBt").innerHTML="Step4";
+        trace.length=0;
+        document.getElementById("samplerate").value=100;
+        document.getElementById("setSR").innerHTML="采样率:&nbsp;100%";
+        return new Promise((resolve,reject)=>{
+            axios.get('fftResult')
+            .then(res=>{
+                trace=res.data.result.concat();
+                setpaint(2,0,0,ratio);
+                document.getElementById("P").innerHTML="绘制完成";
+                document.getElementById("p2").innerHTML="节点数:&nbsp;"+trace.length;
+                downrateLine=49.5+Math.sqrt(2550-trace.length);
+                resolve(4);
+            })
+            .catch(error=>{reject(error);});
+        });
+    }
+
+    function resample(){
+        let s_rate=document.getElementById("samplerate").value;
+        let downrate;
+        document.getElementById("setSR").innerHTML="采样率:&nbsp;"+s_rate+"%";
+        if(trace.length){
+            if(s_rate>downrateLine){
+                downrate=101-s_rate;
+            }
+            else{
+                downrate=(2550-Math.pow(downrateLine-49.5,2))/s_rate
+            }
+            trace.length=0;
+            axios.post('resample',"downrate="+Math.round(downrate))
+            .then( res => {
+                trace=res.data.result.concat();
+                setpaint(2,0,0,ratio);
+                document.getElementById("p2").innerHTML="节点数:&nbsp;"+trace.length;
+            })
+            .catch( error => {
+                console.log(error);
+            }); 
+        }
+    }
+        
+
+</script>

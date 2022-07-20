@@ -1,0 +1,244 @@
+body{
+   background-color: rgba(255,255,255,1);
+   padding: 0px;
+   margin: 0px;
+}
+
+form{
+    position: relative;
+    overflow-x: hidden;
+}
+
+#canvas{
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 2px;
+    margin-bottom: 0;
+    position: relative;
+    width:  calc(50vw - 3rem);
+    height: calc(50vw - 3rem);
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.8);
+}
+
+#canvasIn{
+    margin-left: 5rem;
+    margin-right: 5rem;
+    margin-top: 3rem;
+    margin-bottom: 5px;
+    position: relative;
+    width:  calc(50vw - 11rem);
+    height: calc(50vw - 11rem);
+    background-color: rgba(0,100,240,0.2);
+}
+
+.apply{
+    background-color: rgba(0,10,20,0.3);
+}
+
+#input{
+    border-bottom-left-radius: 8px;
+    border-top-left-radius: 8px;
+}
+#draw{
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+#config{
+    border: 1px solid rgba(0,0,0,0.6);
+    border-radius: 8px;
+    padding: 5px;
+    height:90px;
+}
+
+#p1,#P{
+    position: relative;
+    top:-1px;
+    margin: 0;
+}
+
+#whiteBt{
+    position: relative;
+    left: calc(48vw - 160px);
+    bottom: 50px;
+}
+#drawBt{
+    position: relative;
+    left: calc(50vw - 160px);
+    bottom: 50px;
+}
+
+#fileOne{
+    margin-bottom:2px;
+    width:30vw;
+}
+
+.pdiv1{
+    border-top: 1px dotted rgba(0,0,0,0.6);
+    width:30vw;
+    height:50px;
+    overflow-y: hidden;
+    padding-left: 10px;
+}
+
+.pdiv2{
+    background-color: rgba(70,100,120,0.3);
+    border-radius: 9px;
+    height:70px;
+}
+
+#pre_offset{
+    position:absolute;
+    left: calc(37vw - 45px);
+    top:5px;
+}
+#offset{
+    position:absolute;
+    left:37vw;
+    top:8px;
+}
+
+#p2{
+    width:calc(50vw - 350px);
+    height:36px;
+    z-index: 1;
+    margin: 2px;
+    padding: 1px;
+    position: relative;
+    top:22px;
+    left:calc(5px + 0.2vw);
+    overflow-y:scroll;
+    word-wrap: break-word;
+    word-break: break-all;
+    border-right: 1px dotted rgba(0,10,20,0.7);
+}
+#samplerate{
+    position:absolute;
+    right:2vw;
+    top:40px;
+}
+#setSR{
+    position:absolute;
+    right: calc(2vw + 140px);
+    top:37px;
+}
+#ifcircle{
+    width:60px;
+    position:relative;
+    left:calc(50vw - 330px);
+    top:-12px
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: rgba(48, 61, 77, 1);
+    position: fixed;
+    bottom: -20px;
+    width: 100%;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover:not(.active) {
+    background-color: rgba(147, 175, 185, 0.9);
+}
+
+.bg-none{
+    background-color: transparent !important;
+}
+
+
+@media screen and (max-width: 767px){/*响应式布局*/
+    ul{
+        bottom:-16px;
+    }
+
+    #canvas{
+        margin-top: 5px;
+        width: calc(100vw - 4rem);
+        height:calc(100vw - 4rem);
+    }
+
+    #canvasIn{
+        margin-left: 2rem;
+        margin-right: 2rem;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: calc(100vw - 6rem);
+        height:calc(100vw - 6rem);
+    }
+
+    #input{
+        border-bottom-left-radius: 0px;
+        border-top-right-radius: 8px;
+    }
+
+    #draw{
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 8px;
+        margin-bottom: 46px !important;
+    }
+
+    .pdiv1{
+        width:40vw;
+        overflow-y: scroll;
+    }
+
+    #fileOne{
+        width:50vw;
+    }
+
+    #whiteBt{
+        left: calc(98vw - 180px);
+        bottom: 50px;
+    }
+    #drawBt{
+        left: calc(100vw - 180px);
+    }
+
+    #pre_offset{
+        left: calc(64vw - 45px);
+    }
+    #offset{
+        left:64vw;
+    }
+
+    #p2{
+        width:calc(100vw - 270px);
+        left:3px;
+        overflow-y: scroll;
+        margin: 0;
+    }
+
+    #samplerate{
+        position:relative;
+        left: calc(100vw - 180px);
+        top: 5px;
+    }
+    #setSR{
+        width:100px;
+        position:relative;
+        left:calc(100vw - 160px);
+        top: -45px;
+        margin: 0;
+    }
+    #ifcircle{
+        left:calc(100vw - 256px);
+        top: -60px;
+    }
+
+}
