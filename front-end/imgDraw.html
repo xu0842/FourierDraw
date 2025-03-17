@@ -44,9 +44,9 @@
             </div>    
         </div>
     </div>
-    <ul>
+    <!-- <ul>
         <li><a href="https://xcreate.cool/">主页</a></li>
-    </ul>
+    </ul> -->
  
 </body>
 </html>
@@ -60,6 +60,9 @@
 
     //axios.defaults.baseURL='https://xcreate.cool/'; //使用网站api
     axios.defaults.baseURL='http://127.0.0.1:5000/'; //使用本地后端
+    //axios.defaults.baseURL='http://172.17.32.1:8080/';
+    // axios.defaults.withCredentials = true;
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
 
     window.onload=function(){
         let ctx=canvas1.getContext('2d');
@@ -109,14 +112,19 @@
         document.getElementById("p1").innerHTML="截取尺寸:&nbsp;"+canvas1.width+"&times;"+canvas1.height;
     }
 
+
     function sendImg(){
         let piece=0;
-        let url=canvas1.toDataURL("image/jpeg"); 
+        var url=canvas1.toDataURL("image/jpeg"); 
         document.getElementById("drawBt").innerHTML="Step1";
-        url=url.replace(/\+/g,"%2B");//important!!! 替换加号为'%2B',防止其被ajax替换为空格
+        //url=url.replace(/\+/g,"%2B");//important!!! 替换加号为'%2B',防止其被ajax替换为空格
+        //console.log(url);
+
+        data = {img: url};
         return new Promise((resolve,reject)=>{
-            axios.post('getImg',"img="+url)
+            axios.post('getImg', data)
             .then( res => {
+                //res.header('Access-Control-Allow-Origin', '*');
                 showCanvas(canvas1,res.data.url);
                 setTimeout(()=>{
                     document.getElementById("P").innerHTML="边缘数量:&nbsp;"+res.data.piece;			
@@ -124,7 +132,7 @@
                 resolve(1);
             })
             .catch( error => {
-                console.log(error);
+                console.log("Reject:",error);
                 reject(error);
             }); 
         });
@@ -234,7 +242,9 @@
                 downrate=(2550-Math.pow(downrateLine-49.5,2))/s_rate
             }
             trace.length=0;
-            axios.post('resample',"downrate="+Math.round(downrate))
+
+            data = {downrate: Math.round(downrate)}
+            axios.post('resample',data)
             .then( res => {
                 trace=res.data.result.concat();
                 setpaint(2,0,0,ratio);

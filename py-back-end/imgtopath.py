@@ -12,8 +12,13 @@ pos=[0,0]
 min_R=[]
 finalPath=[]
 
-def getimg(url):
+def getimg(url): 
+    #print('url:',url)
     url=url[url.index(",")+1:]
+
+    # with open('imcode.txt', 'w', encoding='utf-8') as file:
+    #     file.write(url)
+
     data=base64.b64decode(url)
     imgarray=np.fromstring(data,np.uint8)
     img=cv2.imdecode(imgarray,cv2.COLOR_RGB2BGR)
@@ -53,6 +58,9 @@ def get_light_contour(url):
     scannedimg=[]
 
     img=getimg(url)
+
+    # cv2.imshow('img', img)
+    # cv2.waitKey(0)
     
     grey=cv2.cvtColor(img,cv2.COLOR_RGB2GRAY) #灰度化
     filted=cv2.bilateralFilter(grey,4,75,100) #双边滤波,平滑整体的同时尽可能保留边缘细节
@@ -80,6 +88,9 @@ def get_light_contour(url):
     _,light=cv2.threshold(light*10,1,255,cv2.THRESH_BINARY) #阈值化调整
     light=np.array(light,np.uint8)
     del(dense)
+
+    # cv2.imshow('edge', edge)
+    # cv2.waitKey(0)
 
     conimg=np.zeros_like(edge,np.uint8)
 

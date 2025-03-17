@@ -1,4 +1,5 @@
 from flask import Flask, request,json
+from flask_cors import CORS, cross_origin
 import imgtopath as itp
 
 
@@ -11,6 +12,8 @@ def cors(environ):#解决跨域问题
     environ.headers['Access-Control-Allow-Headers']='x-requested-with,content-type'
     return environ
 
+#@cross_origin(origins='*', methods=['POST'])
+
 @app.route('/')
 def hello(): #just for test
     data='This is Python'
@@ -19,7 +22,10 @@ def hello(): #just for test
 @app.route('/getImg',methods=['POST'])
 def getImg():
     print('getImg...')
-    url=request.form['img']
+    data = request.get_json()
+    url = data['img']
+    # url=request.form['img']
+    #print(f'url:{url}')
     contour_url,cnt_num=itp.get_light_contour(url)
     datadic={'url':contour_url,'piece':cnt_num}
     jsonData=json.dumps(datadic)
@@ -47,8 +53,12 @@ def getFftResult():
 @app.route('/resample',methods=['POST'])
 def resamplefft():
     print('refft')
-    downrate=request.form['downrate']
+    data = request.get_json()
+    downrate = data['downrate']
+    print(f'Downrate:{downrate}')
+    # downrate=request.form['downrate']
     return json.dumps({'result':itp.path_fft(downrate).tolist()})
 
 if __name__ == '__main__':
-   app.run(debug = True)
+   app.run()
+   CORS(app) 

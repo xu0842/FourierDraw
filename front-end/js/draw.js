@@ -147,7 +147,7 @@ class Dot {
         this.v=2;
         this.target=[x,y];
         //document.getElementById("p1").innerHTML+="c2";
-        this.draw = function () {
+        this.draw = function (){
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
             ctx.fillStyle = this.color;
