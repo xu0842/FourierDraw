@@ -1,10 +1,10 @@
-# 傅里叶变换绘图-网页版-v3
+# 傅里叶变换绘图-网页版-v4
 --------------------------------------
-- 版本: 2022年4月第三版
-- 在线网页: <https://www.xcreate.cool/test/imgtest/imgDraw.html>
-- 演示视频: [BV1cY411u7jU](https://www.bilibili.com/video/BV1cY411u7jU?spm_id_from=333.999.0.0&vd_source=09a1b1eba90b464c2c46c4c894480343)
+- Version: 2025.03-v4
+- <del>Online website: <https://www.xcreate.cool/test/imgtest/imgDraw.html></del>
+- Presentation Video: [BV1cY411u7jU](https://www.bilibili.com/video/BV1cY411u7jU?spm_id_from=333.999.0.0&vd_source=09a1b1eba90b464c2c46c4c894480343)
 
-<img src="./img/example.png" width="60%">
+<img src="./img/example.png" width="80%">
 
 ### 1、文件结构
 
